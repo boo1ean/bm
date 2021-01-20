@@ -1,28 +1,35 @@
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<template lang="pug">
+v-app
+	v-main
+		v-row
+			v-col(cols=4)
+				Bindings(
+					:bindings="bindings"
+					@add="addBinding"
+					@updateBinding="updateBinding"
+				)
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Bindings from './components/Bindings'
+import store from './store'
 
 export default {
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+	components: {
+		Bindings,
+	},
+	computed: {
+		bindings: () => store.state.bindings
+	},
+	mounted () {
+	},
+	methods: {
+		addBinding () {
+			store.dispatch('addBinding')
+		},
+		updateBinding (binding) {
+			store.dispatch('updateBinding', binding)
+		},
+	},
+};
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
