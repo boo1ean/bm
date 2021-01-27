@@ -2,12 +2,18 @@ import _ from 'lodash'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { v4 } from 'uuid'
+import tsStatuses from '../training-session-statuses'
+import tsModes from '../training-session-modes'
 
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
 	state: {
 		bindings: [],
+		trainingSession: {
+			status: tsStatuses.stopped,
+			mode: tsModes.random,
+		},
 	},
 	mutations: {
 		updateBinding (state, binding) {

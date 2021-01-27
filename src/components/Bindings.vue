@@ -25,7 +25,13 @@ export default {
 		}
 	},
 	mounted () {
-		window.addEventListener('keyup', e => {
+		window.addEventListener('keyup', this.trackUpdateBinding, true)
+	},
+	unmounted () {
+		window.removeEventListener('keyup', this.trackUpdateBinding)
+	},
+	methods: {
+		trackUpdateBinding (e) {
 			if (this.activeBind) {
 				this.$emit('updateBinding', {
 					...this.activeBind,
@@ -41,7 +47,7 @@ export default {
 				})
 				this.activeBind = null
 			}
-		}, true)
+		},
 	},
 }
 
