@@ -4,8 +4,8 @@
 		h1.text-center GET READY
 		h2.text-center.mt-3 {{ ts.countdownTimer | formatCountdown }}
 
-		//-.battleground(v-else-if="isStarted")
-			//-h2 Training is in progress
+	.tasks(v-if="ts.status == 'in progress'")
+
 </template>
 
 <style lang="scss">

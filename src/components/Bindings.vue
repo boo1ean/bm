@@ -7,6 +7,7 @@ v-card
 			:binding="b"
 			@bind="b => activeBind = b"
 			@remove="b => $emit('remove-binding', b)"
+			@update="b => $emit('update-binding', b)"
 		)
 		v-row
 			v-col(cols=12)

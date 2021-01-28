@@ -23,6 +23,7 @@ v-app
 						:bindings="bindings"
 						:ts="ts"
 						@start-clicked="startSession"
+						@update="updateTrainingSession"
 					)
 </template>
 
@@ -48,10 +49,11 @@ export default {
 		ts: () => store.state.trainingSession,
 	},
 	mounted () {
+		store.dispatch('resetState')
 	},
 	methods: {
 		startSession () {
-			store.dispatch('startSession')
+			store.dispatch('startSesssionCountdown')
 		},
 		addBinding () {
 			store.dispatch('addBinding')
@@ -60,9 +62,11 @@ export default {
 			store.dispatch('updateBinding', binding)
 		},
 		removeBinding (binding) {
-			console.log('remove bind method')
 			store.dispatch('removeBinding', binding)
 		},
+		updateTrainingSession (ts) {
+			store.dispatch('updateTrainingSession', ts)
+		}
 	},
 }
 

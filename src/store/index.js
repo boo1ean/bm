@@ -2,8 +2,10 @@ import _ from 'lodash'
 import Vue from 'vue'
 import Vuex from 'vuex'
 import { v4 } from 'uuid'
+import VuexPersistence from 'vuex-persist'
 import tsStatuses from '../training-session-statuses'
 import tsModes from '../training-session-modes'
+import modes from '../modes'
 
 Vue.use(Vuex)
 
@@ -14,6 +16,12 @@ const store = new Vuex.Store({
 			status: tsStatuses.stopped,
 			mode: tsModes.random,
 			countdownTimer: 0,
+			timeToComplete: 300,
+
+			// max number of tasks in training session
+			maxTasks: 1000,
+			// max duration of training session in seconds
+			maxDuration: 60,
 		},
 	},
 	mutations: {
@@ -36,19 +44,28 @@ const store = new Vuex.Store({
 		},
 	},
 	actions: {
+		resetState ({ commit }) {
+			commit('updateTrainingSession', {
+				status: tsStatuses.stopped,
+				countdownTimer: 0,
+			})
+		},
 		updateBinding ({ commit }, binding) {
 			commit('updateBinding', binding)
 		},
-		addBinding({ commit }) {
+		addBinding ({ commit }) {
 			commit('addBinding', {
 				id: v4(),
 				bind: null,
 			})
 		},
-		removeBinding({ commit }, binding) {
+		removeBinding ({ commit }, binding) {
 			commit('removeBinding', binding)
 		},
-		startSession({ commit, state }) {
+		updateTrainingSession ({ commit }, payload) {
+			commit('updateTrainingSession', payload)
+		},
+		startSesssionCountdown ({ commit, state }) {
 			const DEFAULT_CONTDOWN_TIME = 3
 			const COUNTDOWN_INTERVAL_MS = 100
 
@@ -64,6 +81,7 @@ const store = new Vuex.Store({
 						status: 'in progress',
 						countdownTimer: 0,
 					})
+					store.dispatch('startSession')
 				} else {
 					commit('updateTrainingSession', {
 						countdownTimer: state.trainingSession.countdownTimer - 0.1
@@ -72,7 +90,20 @@ const store = new Vuex.Store({
 				}
 			}
 		},
+		startSession ({ state }) {
+			const it = modes.random(state.trainingSession, state.bindings)
+
+			const task = it.next()
+			console.log(task)
+
+			//window.addEventListener('keyup', trackKeypress, true)
+
+			//function trackKeypress () {
+
+			//}
+		}
 	},
+	plugins: [new VuexPersistence().plugin],
 })
 
 export default store

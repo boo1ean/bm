@@ -1,7 +1,10 @@
 <template lang="pug">
 	v-row
 		v-col(cols=6)
-			v-text-field
+			v-text-field(
+				v-model="title"
+				label="Binding title"
+			)
 		v-col(cols=6).d-flex.align-center
 			v-btn(v-if="!binding.bind" text @click="() => $emit('bind', binding)") Bind
 			v-btn(v-else="!binding.bind" text @click="() => $emit('bind', binding)") {{ binding.bind | keybind }}
@@ -11,6 +14,19 @@
 <script>
 export default {
 	props: ['binding'],
+	computed: {
+		title: {
+			get () {
+				return this.binding.title
+			},
+			set (title) {
+				this.$emit('update', {
+					...this.binding,
+					title,
+				})
+			}
+		},
+	},
 	filters: {
 		keybind (bind) {
 			let prefix = []
