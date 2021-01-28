@@ -22,8 +22,6 @@ const store = new Vuex.Store({
 		bindings: [],
 		trainingSession: {
 			mode: tsModes.random,
-			timeToComplete: 300,
-
 			// get ready timer (ms)
 			countdownDuration: 3000,
 			// max number of tasks in training session
@@ -38,6 +36,7 @@ const store = new Vuex.Store({
 		activeSession: {
 			...initialActiveSessionState,
 		},
+		report: null,
 	},
 	mutations: {
 		updateBinding (state, binding) {
@@ -62,13 +61,13 @@ const store = new Vuex.Store({
 				...payload,
 			}
 		},
+		setReport (state, report) {
+			state.report = { ...report }
+		},
 	},
 	actions: {
 		resetState ({ commit }) {
-			commit('updateActiveSession', {
-				status: tsStatuses.stopped,
-				countdownTimer: 0,
-			})
+			commit('updateActiveSession', { ...initialActiveSessionState })
 		},
 		updateBinding ({ commit }, binding) {
 			commit('updateBinding', binding)
@@ -125,6 +124,7 @@ const store = new Vuex.Store({
 			commit('updateActiveSession', {
 				currentTask: task,
 				remainingTime: state.trainingSession.duration,
+				startTime,
 			})
 
 			function sessionTickHandler () {
@@ -227,17 +227,17 @@ const store = new Vuex.Store({
 			}
 
 			function finishAndReport () {
-				commit('updateActiveSession', {
-					status: 'finished'
-				})
-
 				const totalTasks = state.activeSession.completedTasks
+				const currentTime = new Date().getTime()
 
 				const report = {
+					duration: currentTime - state.activeSession.startTime,
 					totalTasksCount: totalTasks.length,
 					avgReactionTime: 0,
-					maxReactionTime: Number.MAX_VALUE,
-					minReactionTime: Number.MIN_VALUE,
+					maxReactionTime: Number.MIN_VALUE,
+					maxReactionTimeBind: null,
+					minReactionTime: Number.MAX_VALUE,
+					minReactionTimeBind: null,
 				}
 
 				const completedTasks = []
@@ -246,6 +246,7 @@ const store = new Vuex.Store({
 				const taskById = {}
 
 				let wrongAttempts = 0
+				let avgReactionTime = 0
 
 				for (const t of totalTasks) {
 					if (!taskById[t.bind.id]) {
@@ -270,12 +271,15 @@ const store = new Vuex.Store({
 						const reactionTime = t.recentTickTime - t.startTime
 						if (reactionTime > report.maxReactionTime) {
 							report.maxReactionTime = reactionTime
+							report.maxReactionTimeBind = t.bind
 						}
 						if (reactionTime < report.minReactionTime) {
 							report.minReactionTime = reactionTime
+							report.minReactionTimeBind = t.bind
 						}
 
 						reactionTimes.push(reactionTime)
+						avgReactionTime += reactionTime
 
 						// Tasks-specific stats
 						const taskStats = taskById[t.bind.id]
@@ -294,7 +298,8 @@ const store = new Vuex.Store({
 					wrongAttempts += t.wrongAttempts
 				}
 
-				for (const t of taskById) {
+				for (const id in taskById) {
+					const t = taskById[id]
 					for (const rt of t.reactionTimes) {
 						t.avgReactionTime += rt
 					}
@@ -304,7 +309,22 @@ const store = new Vuex.Store({
 				report.completedTasksCount = completedTasks.length
 				report.failedTasksCount = failedTasks.length
 				report.wrongAttempts = wrongAttempts
+				report.avgReactionTime = avgReactionTime / reactionTimes.length
 
+				console.log(report)
+
+				if (!report.completedTasksCount) {
+					window.alert('You pressed nothing!')
+					commit('updateActiveSession', {
+						status: 'stopped'
+					})
+					return
+				}
+
+				commit('setReport', report)
+				commit('updateActiveSession', {
+					status: 'finished'
+				})
 			}
 		}
 	},

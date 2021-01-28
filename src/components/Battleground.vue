@@ -12,9 +12,13 @@
 			v-icon(color="orange" x-large v-else-if="as.currentTask.wrongAttempts") mdi-alert-circle
 			v-icon(color="red" x-large v-else-if="as.currentTask.failed") mdi-cancel
 			.mock-40px(v-else)
-	v-row.d-flex.justify-center.align-center.height-100.ma-0
+	v-row.d-flex.justify-center.align-center.height-100.ma-0(v-if="as.status == 'finished'")
 		v-col(cols=6)
-			Report(v-if="as.status == 'finished'")
+			Report(
+				:r="report"
+				@close="close"
+				@save="close"
+			)
 </template>
 
 <style lang="scss">
@@ -56,13 +60,18 @@ export default {
 	components: {
 		Report,
 	},
-	props: ['ts', 'as'],
+	props: ['ts', 'as', 'report'],
 	filters: {
 		formatCountdown (timer) {
 			return (timer / 1000).toFixed(1)
 		},
 		remainingTime (time) {
 			return (time / 1000).toFixed(1)
+		},
+	},
+	methods: {
+		close () {
+			this.$emit('close')
 		},
 	},
 }

@@ -9,6 +9,8 @@ v-app
 			v-show="as.status != 'stopped'"
 			:ts="ts"
 			:as="as"
+			:report="report"
+			@close="resetBattleground"
 		)
 		v-container.fluid(v-show="as.status == 'stopped'")
 			v-row
@@ -49,6 +51,7 @@ export default {
 		bindings: () => store.state.bindings,
 		ts: () => store.state.trainingSession,
 		as: () => store.state.activeSession,
+		report: () => store.state.report,
 	},
 	mounted () {
 		store.dispatch('resetState')
@@ -68,7 +71,10 @@ export default {
 		},
 		updateTrainingSession (ts) {
 			store.dispatch('updateTrainingSession', ts)
-		}
+		},
+		resetBattleground () {
+			store.dispatch('resetState')
+		},
 	},
 }
 

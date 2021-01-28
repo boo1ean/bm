@@ -6,33 +6,33 @@ v-card
 			template(v-slot:default)
 				tbody
 					tr
-						td Total tasks
-						td {{ tasksTotal }}
+						td Duration
+						td {{ r.duration | duration }}
+					tr
+						td Total binds
+						td {{ r.totalTasksCount }}
 					tr
 						td Completed
-						td {{ tasksCompleted }}
+						td {{ r.completedTasksCount }}
 					tr
 						td Failed
-						td {{ tasksFailed }}
+						td {{ r.failedTasksCount }}
 					tr
 						td Wrong attempts
-						td {{ wrongAttempts }}
+						td {{ r.wrongAttempts }}
 					tr
 						td Avg. reaction time
-						td {{ wrongAttempts }}
+						td {{ r.avgReactionTime | reaction }}
 					tr
 						td Slowest keybind
-						td {{ slowestKeybind }}
+						td {{ r.maxReactionTimeBind.title }}
 					tr
 						td Fastest keybind
-						td {{ fastestKeybind }}
-					tr
-						td Slow to fast
-						td {{ slowToFastRanks }}
+						td {{ r.minReactionTimeBind.title }}
 		br
 		.text-center
-			v-btn().mr-2 Save result
-			v-btn() Ok
+			v-btn(@click="() => $emit('save')").mr-2 Save result
+			v-btn(@click="() => $emit('close')") Ok
 </template>
 
 <style lang="scss">
@@ -41,6 +41,14 @@ v-card
 
 <script>
 export default {
-
+	props: ['r'],
+	filters: {
+		duration (ms) {
+			return Math.round(ms / 1000) + ' seconds'
+		},
+		reaction (ms) {
+			return Math.round(ms) + ' ms'
+		}
+	},
 }
 </script>
