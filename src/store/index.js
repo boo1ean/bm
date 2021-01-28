@@ -30,6 +30,10 @@ const store = new Vuex.Store({
 			maxTasks: 1000,
 			// max duration of training session (ms)
 			maxDuration: 60000,
+			// task time limit (ms)
+			taskTimeLimit: 300,
+			// rest between tasks (ms)
+			restTime: 100,
 		},
 		activeSession: {
 			...initialActiveSessionState,
@@ -153,13 +157,11 @@ const store = new Vuex.Store({
 					'shiftKey',
 				])
 
-				console.log(JSON.stringify(pressedPayload))
-				console.log(JSON.stringify(state.activeSession.currentTask.bind.bind))
+				//console.log(JSON.stringify(pressedPayload))
+				//console.log(JSON.stringify(state.activeSession.currentTask.bind.bind))
 
+				const currentTime = new Date().getTime()
 				if (_.isEqual(pressedPayload, state.activeSession.currentTask.bind.bind)) {
-					console.log('GOOODY')
-					const currentTime = new Date().getTime()
-
 					const completedTask = {
 						...state.activeSession.currentTask,
 						success: true,
@@ -171,10 +173,23 @@ const store = new Vuex.Store({
 						recentTickTime: currentTime,
 						success: false,
 					}
-					console.log(newTask)
 					commit('updateActiveSession', {
 						completedTasks: state.activeSession.completedTasks.concat([completedTask]),
-						currentTask: newTask,
+						currentTask: completedTask,
+					})
+					setTimeout(() => {
+						commit('updateActiveSession', {
+							currentTask: newTask,
+						})
+					}, state.trainingSession.restTime)
+				} else {
+					const currentTask = {
+						...state.activeSession.currentTask,
+						wrongAttempt: true,
+						recentTickTime: currentTime,
+					}
+					commit('updateActiveSession', {
+						currentTask,
 					})
 				}
 			}

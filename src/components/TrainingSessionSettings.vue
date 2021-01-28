@@ -24,6 +24,14 @@ v-card
 			label="Max nubmer of tasks to complete"
 			v-model="maxTasks"
 		)
+		v-text-field(
+			label="Task time limit (ms)"
+			v-model="taskTimeLimit"
+		)
+		v-text-field(
+			label="Time between tasks (ms)"
+			v-model="restTime"
+		)
 		v-btn(
 			block
 			@click="() => $emit('start-clicked')"
@@ -40,8 +48,7 @@ export default {
 	filters: {
 		formatCountdown (timer) {
 			return timer.toFixed(1)
-		}
-	},
+		} },
 
 	computed: {
 		modes: function () {
@@ -77,6 +84,28 @@ export default {
 				this.$emit('update', {
 					...this.ts,
 					countdownDuration: countdownDuration * 1000,
+				})
+			}
+		},
+		restTime: {
+			get () {
+				return this.ts.restTime
+			},
+			set (restTime) {
+				this.$emit('update', {
+					...this.ts,
+					restTime,
+				})
+			}
+		},
+		taskTimeLimit: {
+			get () {
+				return this.ts.taskTimeLimit
+			},
+			set (taskTimeLimit) {
+				this.$emit('update', {
+					...this.ts,
+					taskTimeLimit,
 				})
 			}
 		},

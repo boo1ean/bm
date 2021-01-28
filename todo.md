@@ -1,0 +1,5 @@
+- mose rotation 3d support
+- text random location
+- configurable bg & text colors
+- success / error icons during session
+- reporting
