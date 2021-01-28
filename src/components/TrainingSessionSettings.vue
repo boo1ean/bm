@@ -13,7 +13,11 @@ v-card
 		//-label Mouse movement
 
 		v-text-field(
-			label="Max duration (sec)"
+			label="Start countdown duration (sec)"
+			v-model="countdownDuration"
+		)
+		v-text-field(
+			label="Session duration (sec)"
 			v-model="maxDuration"
 		)
 		v-text-field(
@@ -56,12 +60,23 @@ export default {
 		},
 		maxDuration: {
 			get () {
-				return this.ts.maxDuration
+				return this.ts.maxDuration / 1000
 			},
 			set (maxDuration) {
 				this.$emit('update', {
 					...this.ts,
-					maxDuration,
+					maxDuration: maxDuration * 1000,
+				})
+			}
+		},
+		countdownDuration: {
+			get () {
+				return this.ts.countdownDuration / 1000
+			},
+			set (countdownDuration) {
+				this.$emit('update', {
+					...this.ts,
+					countdownDuration: countdownDuration * 1000,
 				})
 			}
 		},

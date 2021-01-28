@@ -9,19 +9,30 @@ import modes from '../modes'
 
 Vue.use(Vuex)
 
+const initialActiveSessionState = {
+	status: tsStatuses.stopped,
+	completedTasks: [],
+	countdownTimer: 0,
+	remainingTime: 0,
+	currentTask: null
+}
+
 const store = new Vuex.Store({
 	state: {
 		bindings: [],
 		trainingSession: {
-			status: tsStatuses.stopped,
 			mode: tsModes.random,
-			countdownTimer: 0,
 			timeToComplete: 300,
 
+			// get ready timer (ms)
+			countdownDuration: 5000,
 			// max number of tasks in training session
 			maxTasks: 1000,
-			// max duration of training session in seconds
-			maxDuration: 60,
+			// max duration of training session (ms)
+			maxDuration: 60000,
+		},
+		activeSession: {
+			...initialActiveSessionState,
 		},
 	},
 	mutations: {
@@ -42,10 +53,16 @@ const store = new Vuex.Store({
 				...payload,
 			}
 		},
+		updateActiveSession (state, payload) {
+			state.activeSession = {
+				...state.activeSession,
+				...payload,
+			}
+		},
 	},
 	actions: {
 		resetState ({ commit }) {
-			commit('updateTrainingSession', {
+			commit('updateActiveSession', {
 				status: tsStatuses.stopped,
 				countdownTimer: 0,
 			})
@@ -66,35 +83,55 @@ const store = new Vuex.Store({
 			commit('updateTrainingSession', payload)
 		},
 		startSesssionCountdown ({ commit, state }) {
-			const DEFAULT_CONTDOWN_TIME = 3
 			const COUNTDOWN_INTERVAL_MS = 100
 
-			commit('updateTrainingSession', {
+			commit('updateActiveSession', {
 				status: 'starting',
-				countdownTimer: DEFAULT_CONTDOWN_TIME,
+				countdownTimer: state.trainingSession.countdownDuration,
 			})
 
 			setTimeout(countdownTick, COUNTDOWN_INTERVAL_MS)
 			function countdownTick () {
-				if (state.trainingSession.countdownTimer < 0.1) {
-					commit('updateTrainingSession', {
+				if (state.activeSession.countdownTimer < 100) {
+					commit('updateActiveSession', {
 						status: 'in progress',
 						countdownTimer: 0,
 					})
 					store.dispatch('startSession')
 				} else {
-					commit('updateTrainingSession', {
-						countdownTimer: state.trainingSession.countdownTimer - 0.1
+					commit('updateActiveSession', {
+						countdownTimer: state.activeSession.countdownTimer - 100
 					})
 					setTimeout(countdownTick, COUNTDOWN_INTERVAL_MS)
 				}
 			}
 		},
-		startSession ({ state }) {
+		startSession ({ state, commit }) {
 			const it = modes.random(state.trainingSession, state.bindings)
+			const startTime = new Date().getTime()
 
-			const task = it.next()
-			console.log(task)
+			const SESSION_HANDLER_FREQ = 30
+			let sessionInterval = setInterval(sessionTickHandler, SESSION_HANDLER_FREQ)
+
+			commit('updateActiveSession', {
+				currentTask: it.next(),
+				remainingTime: state.trainingSession.duration,
+			})
+
+			function sessionTickHandler () {
+				const currentTime = new Date().getTime()
+				const diff = currentTime - startTime
+
+				if (diff >= state.trainingSession.maxDuration) {
+					clearInterval(sessionInterval)
+					console.log('Session finished by duration')
+				}
+
+				commit('updateActiveSession', {
+					remainingTime: state.trainingSession.maxDuration - diff
+				})
+
+			}
 
 			//window.addEventListener('keyup', trackKeypress, true)
 

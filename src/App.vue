@@ -6,19 +6,20 @@ v-app
 			//-dense
 		//-)
 		Battleground(
-			v-show="ts.status != 'stopped'"
+			v-show="as.status != 'stopped'"
 			:ts="ts"
+			:as="as"
 		)
 		v-container.fluid
 			v-row
-				v-col(cols=6 v-show="ts.status == 'stopped'")
+				v-col(cols=6 v-show="as.status == 'stopped'")
 					Bindings(
 						:bindings="bindings"
 						@add="addBinding"
 						@remove-binding="removeBinding"
 						@update-binding="updateBinding"
 					)
-				v-col(cols=6 v-show="ts.status == 'stopped'")
+				v-col(cols=6 v-show="as.status == 'stopped'")
 					TrainingSessionSettings(
 						:bindings="bindings"
 						:ts="ts"
@@ -47,6 +48,7 @@ export default {
 	computed: {
 		bindings: () => store.state.bindings,
 		ts: () => store.state.trainingSession,
+		as: () => store.state.activeSession,
 	},
 	mounted () {
 		store.dispatch('resetState')
