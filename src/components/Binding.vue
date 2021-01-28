@@ -2,9 +2,10 @@
 	v-row
 		v-col(cols=6)
 			v-text-field
-		v-col(cols=6).d-flex.justify-center.align-center
-			v-btn(v-if="!binding.bind" label block @click="() => $emit('bind', binding)") Bind
-			v-btn(v-else="!binding.bind" label block @click="() => $emit('bind', binding)") {{ binding.bind | keybind }}
+		v-col(cols=6).d-flex.align-center
+			v-btn(v-if="!binding.bind" text @click="() => $emit('bind', binding)") Bind
+			v-btn(v-else="!binding.bind" text @click="() => $emit('bind', binding)") {{ binding.bind | keybind }}
+			v-btn(v-if="binding.id" text color="red" @click="() => $emit('remove', binding)") REMOVE
 </template>
 
 <script>

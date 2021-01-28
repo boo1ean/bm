@@ -24,6 +24,10 @@ const store = new Vuex.Store({
 			console.log(state, binding)
 			state.bindings = state.bindings.concat([binding])
 		},
+		removeBinding (state, binding) {
+			console.log('remove bind')
+			state.bindings.splice(_.findIndex(state.bindings, { id: binding.id }), 1)
+		},
 	},
 	actions: {
 		updateBinding ({ commit }, binding) {
@@ -34,6 +38,9 @@ const store = new Vuex.Store({
 				id: v4(),
 				bind: null,
 			})
+		},
+		removeBinding({ commit }, binding) {
+			commit('removeBinding', binding)
 		},
 	},
 })

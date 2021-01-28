@@ -6,6 +6,7 @@ v-card
 			v-for="b in bindings"
 			:binding="b"
 			@bind="b => activeBind = b"
+			@remove="b => $emit('remove-binding', b)"
 		)
 		v-row
 			v-col(cols=12)
@@ -33,7 +34,7 @@ export default {
 	methods: {
 		trackUpdateBinding (e) {
 			if (this.activeBind) {
-				this.$emit('updateBinding', {
+				this.$emit('update-binding', {
 					...this.activeBind,
 					bind: _.pick(e, [
 						'altKey',

@@ -8,45 +8,37 @@ v-card
 		)
 			v-btn(v-for="m in modes" small :value="m") {{ m }}
 	v-card-text
-		.countdown(
-			v-if="isStarting"
-		)
-			h1 GET READY
-			h2.text-center.mt-3 {{ countdownTimer | formatCountdown }}
+		label Mouse rotations
+		br
+		label Mouse movement
+		//-.countdown(
+			//-v-if="isStarting"
+		//-)
+			//-h1 GET READY
+			//-h2.text-center.mt-3 {{ countdownTimer | formatCountdown }}
 
-		.battleground(v-else-if="isStarted")
-			h2 Training is in progress
+		//-.battleground(v-else-if="isStarted")
+			//-h2 Training is in progress
 
 		v-btn(
-			v-else
 			block
-			@click="() => $emit('startClicked')"
+			@click="() => $emit('start-clicked')"
 		) START TRAINING SESSION
 
 </template>
 
 <script>
 import tsModes from '../training-session-modes'
-const DEFAULT_CONTDOWN_TIME = 3
-
 export default {
 	props: ['bindings', 'ts'],
 
 	data () {
 		return {
-			isStarting: false,
-			isStarted: false,
-			countdownTimer: 0,
 			countdownInterval: null,
 		}
 	},
 
 	methods: {
-		startSession () {
-			this.isStarting = true
-			this.countdownTimer = DEFAULT_CONTDOWN_TIME
-			this.countdownInterval = setInterval(() => countdownTick(this), 100)
-		},
 	},
 
 	filters: {
@@ -60,16 +52,5 @@ export default {
 			return Object.keys(tsModes)
 		}
 	},
-}
-
-function countdownTick (ctx) {
-	if (ctx.countdownTimer < 0.1) {
-		ctx.isStarting = false
-		ctx.isStarted = true
-		ctx.countdownTimer = 0
-		clearInterval(ctx.countdownInterval)
-	} else {
-		ctx.countdownTimer -= 0.1
-	}
 }
 </script>
