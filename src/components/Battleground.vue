@@ -4,8 +4,9 @@
 		h1.text-center GET READY
 		h2.text-center.mt-3 {{ as.countdownTimer | formatCountdown }}
 
-	.progress-wrapper(v-if="as.status == 'in progress'")
+	.progress-wrapper(v-if="as.status == 'in progress'").d-flex.justify-center.align-center
 		.remaining-time {{ as.remainingTime | remainingTime }}
+		.current-keybind {{ as.currentTask.bind.title }}
 
 </template>
 
@@ -18,6 +19,14 @@
 
 	.countdown {
 		height: 100%;
+	}
+
+	.progress-wrapper {
+		height: 100%;
+	}
+
+	.current-keybind {
+		font-size: 3rem;
 	}
 
 	.remaining-time {

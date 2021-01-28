@@ -113,8 +113,14 @@ const store = new Vuex.Store({
 			const SESSION_HANDLER_FREQ = 30
 			let sessionInterval = setInterval(sessionTickHandler, SESSION_HANDLER_FREQ)
 
+			let task = {
+				...it.next().value,
+				startTime,
+				recentTickTime: startTime,
+				success: false,
+			}
 			commit('updateActiveSession', {
-				currentTask: it.next(),
+				currentTask: task,
 				remainingTime: state.trainingSession.duration,
 			})
 
@@ -124,6 +130,7 @@ const store = new Vuex.Store({
 
 				if (diff >= state.trainingSession.maxDuration) {
 					clearInterval(sessionInterval)
+					window.removeEventListener('keyup', trackKeypress, true)
 					console.log('Session finished by duration')
 				}
 
@@ -133,11 +140,44 @@ const store = new Vuex.Store({
 
 			}
 
-			//window.addEventListener('keyup', trackKeypress, true)
+			window.addEventListener('keyup', trackKeypress, true)
 
-			//function trackKeypress () {
+			function trackKeypress (e) {
+				const pressedPayload = _.pick(e, [
+					'altKey',
+					'code',
+					'ctrlKey',
+					'key',
+					'keyCode',
+					'metaKey',
+					'shiftKey',
+				])
 
-			//}
+				console.log(JSON.stringify(pressedPayload))
+				console.log(JSON.stringify(state.activeSession.currentTask.bind.bind))
+
+				if (_.isEqual(pressedPayload, state.activeSession.currentTask.bind.bind)) {
+					console.log('GOOODY')
+					const currentTime = new Date().getTime()
+
+					const completedTask = {
+						...state.activeSession.currentTask,
+						success: true,
+						recentTickTime: currentTime,
+					}
+					const newTask = {
+						...it.next().value,
+						startTime: currentTime,
+						recentTickTime: currentTime,
+						success: false,
+					}
+					console.log(newTask)
+					commit('updateActiveSession', {
+						completedTasks: state.activeSession.completedTasks.concat([completedTask]),
+						currentTask: newTask,
+					})
+				}
+			}
 		}
 	},
 	plugins: [new VuexPersistence().plugin],

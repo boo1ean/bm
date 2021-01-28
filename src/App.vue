@@ -10,7 +10,7 @@ v-app
 			:ts="ts"
 			:as="as"
 		)
-		v-container.fluid
+		v-container.fluid(v-show="as.status == 'stopped'")
 			v-row
 				v-col(cols=6 v-show="as.status == 'stopped'")
 					Bindings(
