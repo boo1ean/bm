@@ -5,6 +5,10 @@ v-app
 			//-color="yellow"
 			//-dense
 		//-)
+		Battleground(
+			v-show="ts.status != 'stopped'"
+			:ts="ts"
+		)
 		v-container.fluid
 			v-row
 				v-col(cols=6 v-show="ts.status == 'stopped'")
@@ -28,8 +32,6 @@ import TrainingSessionSettings from './components/TrainingSessionSettings'
 import Battleground from './components/Battleground'
 import store from './store'
 
-const DEFAULT_CONTDOWN_TIME = 3
-
 export default {
 	components: {
 		Bindings,
@@ -49,9 +51,7 @@ export default {
 	},
 	methods: {
 		startSession () {
-			this.ts.status = 'starting'
-			this.ts.countdownTimer = DEFAULT_CONTDOWN_TIME
-			this.countdownInterval = setInterval(() => countdownTick(this), 100)
+			store.dispatch('startSession')
 		},
 		addBinding () {
 			store.dispatch('addBinding')
@@ -66,13 +66,4 @@ export default {
 	},
 }
 
-function countdownTick (ctx) {
-	if (ctx.countdownTimer < 0.1) {
-		ctx.ts.status = 'in progress'
-		ctx.ts.countdownTimer = 0
-		clearInterval(ctx.countdownInterval)
-	} else {
-		ctx.ts.countdownTimer -= 0.1
-	}
-}
 </script>

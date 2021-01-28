@@ -13,6 +13,7 @@ const store = new Vuex.Store({
 		trainingSession: {
 			status: tsStatuses.stopped,
 			mode: tsModes.random,
+			countdownTimer: 0,
 		},
 	},
 	mutations: {
@@ -25,8 +26,13 @@ const store = new Vuex.Store({
 			state.bindings = state.bindings.concat([binding])
 		},
 		removeBinding (state, binding) {
-			console.log('remove bind')
 			state.bindings.splice(_.findIndex(state.bindings, { id: binding.id }), 1)
+		},
+		updateTrainingSession (state, payload) {
+			state.trainingSession = {
+				...state.trainingSession,
+				...payload,
+			}
 		},
 	},
 	actions: {
@@ -41,6 +47,30 @@ const store = new Vuex.Store({
 		},
 		removeBinding({ commit }, binding) {
 			commit('removeBinding', binding)
+		},
+		startSession({ commit, state }) {
+			const DEFAULT_CONTDOWN_TIME = 3
+			const COUNTDOWN_INTERVAL_MS = 100
+
+			commit('updateTrainingSession', {
+				status: 'starting',
+				countdownTimer: DEFAULT_CONTDOWN_TIME,
+			})
+
+			setTimeout(countdownTick, COUNTDOWN_INTERVAL_MS)
+			function countdownTick () {
+				if (state.trainingSession.countdownTimer < 0.1) {
+					commit('updateTrainingSession', {
+						status: 'in progress',
+						countdownTimer: 0,
+					})
+				} else {
+					commit('updateTrainingSession', {
+						countdownTimer: state.trainingSession.countdownTimer - 0.1
+					})
+					setTimeout(countdownTick, COUNTDOWN_INTERVAL_MS)
+				}
+			}
 		},
 	},
 })

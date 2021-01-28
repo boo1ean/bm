@@ -11,14 +11,6 @@ v-card
 		label Mouse rotations
 		br
 		label Mouse movement
-		//-.countdown(
-			//-v-if="isStarting"
-		//-)
-			//-h1 GET READY
-			//-h2.text-center.mt-3 {{ countdownTimer | formatCountdown }}
-
-		//-.battleground(v-else-if="isStarted")
-			//-h2 Training is in progress
 
 		v-btn(
 			block
@@ -31,15 +23,6 @@ v-card
 import tsModes from '../training-session-modes'
 export default {
 	props: ['bindings', 'ts'],
-
-	data () {
-		return {
-			countdownInterval: null,
-		}
-	},
-
-	methods: {
-	},
 
 	filters: {
 		formatCountdown (timer) {
