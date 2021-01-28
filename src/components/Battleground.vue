@@ -9,10 +9,12 @@
 		.task-wrapper.d-flex.flex-column
 			.current-keybind {{ as.currentTask.bind.title }}
 			v-icon(color="green" x-large v-if="as.currentTask.success") mdi-check-circle
-			v-icon(color="orange" x-large v-else-if="as.currentTask.wrongAttempt") mdi-alert-circle
-			v-icon(color="red" x-large v-else-if="as.currentTask.fail") mdi-cancel
+			v-icon(color="orange" x-large v-else-if="as.currentTask.wrongAttempts") mdi-alert-circle
+			v-icon(color="red" x-large v-else-if="as.currentTask.failed") mdi-cancel
 			.mock-40px(v-else)
-
+	v-row.d-flex.justify-center.align-center.height-100.ma-0
+		v-col(cols=6)
+			Report(v-if="as.status == 'finished'")
 </template>
 
 <style lang="scss">
@@ -42,10 +44,18 @@
 	.mock-40px {
 		height: 40px;
 	}
+	.height-100 {
+		height: 100%;
+	}
 }
 </style>
 <script>
+import Report from './Report'
+
 export default {
+	components: {
+		Report,
+	},
 	props: ['ts', 'as'],
 	filters: {
 		formatCountdown (timer) {

@@ -20,7 +20,8 @@ export default function *randomTrainingSession (ts, bindings) {
 		const bindIndex = _.random(0, bindings.length - 1)
 		yield {
 			bind: bindings[bindIndex],
-			ttc: ts.timeToComplete,
+			timeLimit: ts.taskTimeLimit,
+			wrongAttempts: 0,
 		}
 	}
 }

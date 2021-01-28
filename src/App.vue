@@ -12,14 +12,14 @@ v-app
 		)
 		v-container.fluid(v-show="as.status == 'stopped'")
 			v-row
-				v-col(cols=6 v-show="as.status == 'stopped'")
+				v-col(cols=6)
 					Bindings(
 						:bindings="bindings"
 						@add="addBinding"
 						@remove-binding="removeBinding"
 						@update-binding="updateBinding"
 					)
-				v-col(cols=6 v-show="as.status == 'stopped'")
+				v-col(cols=6)
 					TrainingSessionSettings(
 						:bindings="bindings"
 						:ts="ts"
