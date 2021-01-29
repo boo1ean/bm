@@ -4,10 +4,10 @@
 		width=800
 	)
 		v-card-title.justify-space-between
-			span Report
+			span Training report
 			v-btn(icon @click="() => $emit('close')")
 				v-icon mdi-close
-		v-card-subtitle {{ new Date(r.createdAt) }}
+		v-card-subtitle {{ r.createdAt | date }}
 		v-card-text
 			v-tabs(
 				v-model="tab"
@@ -33,7 +33,7 @@
 									td Duration
 									td {{ r.duration | duration }}
 								tr
-									td Total binds
+									td Total tasks
 									td {{ r.totalTasksCount }}
 								tr
 									td Completed
@@ -89,6 +89,7 @@
 </style>
 
 <script>
+import { DateTime } from 'luxon'
 export default {
 	props: ['r'],
 	data () {
@@ -129,7 +130,10 @@ export default {
 		},
 		reaction (ms) {
 			return Math.round(ms) + ' ms'
-		}
+		},
+		date (ts) {
+			return DateTime.fromMillis(ts).toLocaleString(DateTime.DATETIME_FULL)
+		},
 	},
 }
 </script>

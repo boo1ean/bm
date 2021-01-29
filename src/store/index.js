@@ -42,7 +42,7 @@ const store = new Vuex.Store({
 	mutations: {
 		updateBinding (state, binding) {
 			const index = _.findIndex(state.bindings, { id: binding.id })
-			state.bindings.splice(index, 1)
+			state.bindings.splice(index, 1, binding)
 		},
 		addBinding (state, binding) {
 			state.bindings = state.bindings.concat([binding])
@@ -83,16 +83,23 @@ const store = new Vuex.Store({
 		addBinding ({ commit }) {
 			commit('addBinding', {
 				id: v4(),
+				title: 'Bind title',
 				bind: null,
 			})
 		},
 		removeBinding ({ commit }, binding) {
-			commit('removeBinding', binding)
+			if (window.confirm('Are you sure?')) {
+				commit('removeBinding', binding)
+			}
 		},
 		updateTrainingSession ({ commit }, payload) {
 			commit('updateTrainingSession', payload)
 		},
 		startSesssionCountdown ({ commit, state }) {
+			if (!state.bindings.length) {
+				return window.alert('No bindings, no training!')
+			}
+
 			const COUNTDOWN_INTERVAL_MS = 100
 
 			commit('updateActiveSession', {

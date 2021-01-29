@@ -1,17 +1,22 @@
 <template lang="pug">
 v-card
-	v-card-title Bindings
+	v-card-title.align-center.justify-space-between
+		span Bindings
+		v-btn(text @click="expanded = !expanded")
+			span(v-if="expanded") hide
+			span(v-else) show
 	v-card-text
-		Binding(
-			v-for="b in bindings"
-			:binding="b"
-			@bind="b => activeBind = b"
-			@remove="b => $emit('remove-binding', b)"
-			@update="b => $emit('update-binding', b)"
-		)
-		v-row
-			v-col(cols=12)
-				v-btn(block @click="() => $emit('add')") ADD
+		v-simple-table(v-show="expanded")
+			template(v-slot:default)
+				tbody
+					Binding(
+						v-for="b in bindings"
+						:binding="b"
+						@bind="b => activeBind = b"
+						@remove="b => $emit('remove-binding', b)"
+						@update="b => $emit('update-binding', b)"
+					)
+		v-btn(block @click="() => { $emit('add'); expanded = true }") ADD
 </template>
 <script>
 import _ from 'lodash'
@@ -23,7 +28,8 @@ export default {
 	props: ['bindings'],
 	data () {
 		return {
-			activeBind: null
+			activeBind: null,
+			expanded: true,
 		}
 	},
 	mounted () {
