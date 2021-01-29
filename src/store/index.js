@@ -27,9 +27,9 @@ const store = new Vuex.Store({
 			// max number of tasks in training session
 			maxTasks: 1000,
 			// max duration of training session (ms)
-			maxDuration: 60000,
+			maxDuration: 30000,
 			// task time limit (ms)
-			taskTimeLimit: 1000,
+			taskTimeLimit: 5000,
 			// rest between tasks (ms)
 			restTime: 300,
 		},
@@ -37,6 +37,7 @@ const store = new Vuex.Store({
 			...initialActiveSessionState,
 		},
 		report: null,
+		reports: [],
 	},
 	mutations: {
 		updateBinding (state, binding) {
@@ -252,13 +253,15 @@ const store = new Vuex.Store({
 					if (!taskById[t.bind.id]) {
 						taskById[t.bind.id] = {
 							id: t.bind.id,
+							title: t.bind.title,
 							completed: [],
 							failed: [],
 							reactionTimes: [],
+							totalAttempts: 0,
 							wrongAttempts: 0,
 							avgReactionTime: 0,
-							maxReactionTime: Number.MAX_VALUE,
-							minReactionTime: Number.MIN_VALUE,
+							maxReactionTime: Number.MIN_VALUE,
+							minReactionTime: Number.MAX_VALUE,
 						}
 					}
 
@@ -269,15 +272,6 @@ const store = new Vuex.Store({
 						completedTasks.push(t)
 
 						const reactionTime = t.recentTickTime - t.startTime
-						if (reactionTime > report.maxReactionTime) {
-							report.maxReactionTime = reactionTime
-							report.maxReactionTimeBind = t.bind
-						}
-						if (reactionTime < report.minReactionTime) {
-							report.minReactionTime = reactionTime
-							report.minReactionTimeBind = t.bind
-						}
-
 						reactionTimes.push(reactionTime)
 						avgReactionTime += reactionTime
 
@@ -295,6 +289,8 @@ const store = new Vuex.Store({
 							taskStats.minReactionTime = reactionTime
 						}
 					}
+					taskById[t.bind.id].totalAttempts++
+
 					wrongAttempts += t.wrongAttempts
 				}
 
@@ -303,13 +299,23 @@ const store = new Vuex.Store({
 					for (const rt of t.reactionTimes) {
 						t.avgReactionTime += rt
 					}
-					t.avgReactionTime /= t.reactionTimes.length
+					t.avgReactionTime = Math.round(t.avgReactionTime / t.reactionTimes.length)
+
+					if (t.avgReactionTime > report.maxReactionTime) {
+						report.maxReactionTime = t.avgReactionTime
+						report.maxReactionTimeBind = t
+					}
+					if (t.avgReactionTime < report.minReactionTime) {
+						report.minReactionTime = t.avgReactionTime
+						report.minReactionTimeBind = t
+					}
 				}
 
 				report.completedTasksCount = completedTasks.length
 				report.failedTasksCount = failedTasks.length
 				report.wrongAttempts = wrongAttempts
 				report.avgReactionTime = avgReactionTime / reactionTimes.length
+				report.taskById = taskById
 
 				console.log(report)
 

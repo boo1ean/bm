@@ -1,10 +1,6 @@
 <template lang="pug">
 v-app
 	v-main
-		//-v-app-bar.mb-3(
-			//-color="yellow"
-			//-dense
-		//-)
 		Battleground(
 			v-show="as.status != 'stopped'"
 			:ts="ts"
