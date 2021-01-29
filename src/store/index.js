@@ -36,7 +36,7 @@ const store = new Vuex.Store({
 		activeSession: {
 			...initialActiveSessionState,
 		},
-		report: null,
+		report: {},
 		reports: [],
 	},
 	mutations: {
@@ -76,6 +76,7 @@ const store = new Vuex.Store({
 	actions: {
 		resetState ({ commit }) {
 			commit('updateActiveSession', { ...initialActiveSessionState })
+			commit('setReport', {})
 		},
 		updateBinding ({ commit }, binding) {
 			commit('updateBinding', binding)
