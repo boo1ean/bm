@@ -1,6 +1,12 @@
 <template lang="pug">
 v-app
 	v-main
+		Report(
+			v-if="report.id"
+			:r="report"
+			@close="closeReport"
+			@delete="deleteReport"
+		)
 		Battleground(
 			v-show="as.status != 'stopped'"
 			:ts="ts"
@@ -24,12 +30,20 @@ v-app
 						@start-clicked="startSession"
 						@update="updateTrainingSession"
 					)
+				v-col(cols=12)
+					ReportsHistory(
+						:reports="reports"
+						@show="showReport"
+						@delete="deleteReport"
+					)
 </template>
 
 <script>
 import Bindings from './components/Bindings'
 import TrainingSessionSettings from './components/TrainingSessionSettings'
 import Battleground from './components/Battleground'
+import Report from './components/Report'
+import ReportsHistory from './components/ReportsHistory'
 import store from './store'
 
 export default {
@@ -37,17 +51,19 @@ export default {
 		Bindings,
 		TrainingSessionSettings,
 		Battleground,
+		Report,
+		ReportsHistory,
 	},
 	data () {
 		return {
 			countdownInterval: null,
 		}
 	},
-	computed: {
-		bindings: () => store.state.bindings,
+	computed: { bindings: () => store.state.bindings,
 		ts: () => store.state.trainingSession,
 		as: () => store.state.activeSession,
 		report: () => store.state.report,
+		reports: () => store.state.reports,
 	},
 	mounted () {
 		store.dispatch('resetState')
@@ -70,6 +86,17 @@ export default {
 		},
 		resetBattleground () {
 			store.dispatch('resetState')
+		},
+		closeReport () {
+			store.dispatch('closeReport')
+		},
+		deleteReport (report) {
+			if (window.confirm('Are you sure?')) {
+				store.dispatch('deleteReport', report)
+			}
+		},
+		showReport (report) {
+			store.dispatch('setReport', report)
 		},
 	},
 }

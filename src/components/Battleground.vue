@@ -13,15 +13,9 @@
 			v-icon(color="red" x-large v-else-if="as.currentTask.failed") mdi-cancel
 			.mock-40px(v-else)
 	v-row.d-flex.justify-center.align-center.height-100.ma-0(v-if="as.status == 'finished'")
-		v-col(cols=6)
-			Report(
-				:r="report"
-				@close="close"
-				@save="close"
-			)
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 .wrapper {
 	height: 100%;
 	background-color: black;
@@ -54,13 +48,8 @@
 }
 </style>
 <script>
-import Report from './Report'
-
 export default {
-	components: {
-		Report,
-	},
-	props: ['ts', 'as', 'report'],
+	props: ['ts', 'as'],
 	filters: {
 		formatCountdown (timer) {
 			return (timer / 1000).toFixed(1)

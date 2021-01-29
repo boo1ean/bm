@@ -1,76 +1,91 @@
 <template lang="pug">
-v-card
-	v-card-title.text-center Session result
-	v-card-text
-		v-tabs(
-			v-model="tab"
-			background-color="transparent"
-			color="basil"
-			grow
-		)
-			v-tab(
-				key="summary"
-			) Summary
-			v-tab(
-				key="details"
-			) Details
+.wrapper
+	v-card(
+		width=800
+	)
+		v-card-title.justify-space-between
+			span Report
+			v-btn(icon @click="() => $emit('close')")
+				v-icon mdi-close
+		v-card-subtitle {{ new Date(r.createdAt) }}
+		v-card-text
+			v-tabs(
+				v-model="tab"
+				background-color="transparent"
+				color="basil"
+				grow
+			)
+				v-tab(
+					key="summary"
+				) Summary
+				v-tab(
+					key="details"
+				) Details
 
-		v-tabs-items(v-model="tab")
-			v-tab-item(
-				key="summary"
-			)
-				v-simple-table
-					template(v-slot:default)
-						tbody
-							tr
-								td Duration
-								td {{ r.duration | duration }}
-							tr
-								td Total binds
-								td {{ r.totalTasksCount }}
-							tr
-								td Completed
-								td {{ r.completedTasksCount }}
-							tr
-								td Failed
-								td {{ r.failedTasksCount }}
-							tr
-								td Wrong attempts
-								td {{ r.wrongAttempts }}
-							tr
-								td Avg. reaction time
-								td {{ r.avgReactionTime | reaction }}
-							tr
-								td Slowest keybind
-								td {{ r.maxReactionTimeBind.title }}
-							tr
-								td Fastest keybind
-								td {{ r.minReactionTimeBind.title }}
-			v-tab-item(
-				key="details"
-			)
-				v-data-table(
-					:headers="detailsHeaders"
-					:items="tasks"
-					:items-per-page=100
-					hide-default-footer
+			v-tabs-items(v-model="tab")
+				v-tab-item(
+					key="summary"
 				)
-					template(v-slot:item.totalAttempts="{ item }")
-						span
-							span.green--text {{ item.completed.length }}
-							span /
-							span.orange--text {{ item.wrongAttempts }}
-							span /
-							span.red--text {{ item.failed.length }}
+					v-simple-table
+						template(v-slot:default)
+							tbody
+								tr
+									td Duration
+									td {{ r.duration | duration }}
+								tr
+									td Total binds
+									td {{ r.totalTasksCount }}
+								tr
+									td Completed
+									td {{ r.completedTasksCount }}
+								tr
+									td Failed
+									td {{ r.failedTasksCount }}
+								tr
+									td Wrong attempts
+									td {{ r.wrongAttempts }}
+								tr
+									td Avg. reaction time
+									td {{ r.avgReactionTime | reaction }}
+								tr
+									td Slowest keybind
+									td {{ r.maxReactionTimeBind.title }}
+								tr
+									td Fastest keybind
+									td {{ r.minReactionTimeBind.title }}
+				v-tab-item(
+					key="details"
+				)
+					v-data-table(
+						:headers="detailsHeaders"
+						:items="tasks"
+						:items-per-page=100
+						hide-default-footer
+					)
+						template(v-slot:item.totalAttempts="{ item }")
+							span
+								span.green--text {{ item.completed.length }}
+								span /
+								span.orange--text {{ item.wrongAttempts }}
+								span /
+								span.red--text {{ item.failed.length }}
 
-		br
-		.text-center
-			v-btn(@click="() => $emit('save')").mr-2 Save result
-			v-btn(@click="() => $emit('close')") Ok
+		v-card-actions.flex-row-reverse
+			v-btn(text @click="() => $emit('close')") Close
+			v-btn(text color="red" @click="() => $emit('delete', r)") Delete
 </template>
 
 <style lang="scss">
-
+.wrapper {
+	position: fixed;
+	height: 100%;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 2;
+	background-color: rgba(50, 50, 50, 0.9)
+}
 </style>
 
 <script>

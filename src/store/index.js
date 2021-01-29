@@ -42,7 +42,7 @@ const store = new Vuex.Store({
 	mutations: {
 		updateBinding (state, binding) {
 			const index = _.findIndex(state.bindings, { id: binding.id })
-			state.bindings.splice(index, 1, binding)
+			state.bindings.splice(index, 1)
 		},
 		addBinding (state, binding) {
 			state.bindings = state.bindings.concat([binding])
@@ -64,6 +64,13 @@ const store = new Vuex.Store({
 		},
 		setReport (state, report) {
 			state.report = { ...report }
+		},
+		addReport (state, report) {
+			state.reports = state.reports.concat([ report ])
+		},
+		deleteReport (state, report) {
+			const index = _.findIndex(state.reports, { id: report.id })
+			state.reports.splice(index, 1)
 		},
 	},
 	actions: {
@@ -232,6 +239,8 @@ const store = new Vuex.Store({
 				const currentTime = new Date().getTime()
 
 				const report = {
+					id: v4(),
+					createdAt: currentTime,
 					duration: currentTime - state.activeSession.startTime,
 					totalTasksCount: totalTasks.length,
 					avgReactionTime: 0,
@@ -327,12 +336,22 @@ const store = new Vuex.Store({
 					return
 				}
 
+				commit('addReport', report)
 				commit('setReport', report)
 				commit('updateActiveSession', {
-					status: 'finished'
+					status: 'stopped'
 				})
 			}
-		}
+		},
+		closeReport ({ commit }) {
+			commit('setReport', {})
+		},
+		deleteReport ({ commit }, report) {
+			commit('deleteReport', report)
+		},
+		setReport ({ commit }, report) {
+			commit('setReport', report)
+		},
 	},
 	plugins: [new VuexPersistence().plugin],
 })
