@@ -44,6 +44,9 @@ export default {
 				prefix.push('Shift')
 			}
 			prefix.push(bind.key)
+			if (bind.code.indexOf('Num') === 0) {
+				prefix[prefix.length - 1] += ' (np)'
+			}
 			return prefix.join('+')
 		},
 	},

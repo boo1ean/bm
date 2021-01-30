@@ -22,6 +22,9 @@ v-app
 						@add="addBinding"
 						@remove-binding="removeBinding"
 						@update-binding="updateBinding"
+						@copy="copyBindings"
+						@paste="pasteBindings"
+						@append="appendBindings"
 					)
 				v-col(cols=6)
 					TrainingSessionSettings(
@@ -39,12 +42,14 @@ v-app
 </template>
 
 <script>
+import _ from 'lodash'
 import Bindings from './components/Bindings'
 import TrainingSessionSettings from './components/TrainingSessionSettings'
 import Battleground from './components/Battleground'
 import Report from './components/Report'
 import ReportsHistory from './components/ReportsHistory'
 import store from './store'
+import bu from "./utils/binding-utils";
 
 export default {
 	components: {
@@ -67,6 +72,7 @@ export default {
 	},
 	mounted () {
 		store.dispatch('resetState')
+		navigator.clipboard.readText().then(console.log)
 	},
 	methods: {
 		startSession () {
@@ -98,7 +104,48 @@ export default {
 		showReport (report) {
 			store.dispatch('setReport', report)
 		},
+		async copyBindings () {
+			const bindings = JSON.stringify(this.bindings)
+			await navigator.clipboard.writeText(bindings)
+		},
+		async pasteBindings () {
+			try {
+				const bindings = await getBindingsFromClipboard()
+				store.dispatch('setBindings', bindings)
+			} catch (e) {
+				window.alert('Something wrong with your clipboard content. It\'s not bindings')
+			}
+		},
+		async appendBindings () {
+			try {
+				const bindings = await getBindingsFromClipboard()
+				for (const b of bindings) {
+					if (!_.find(this.bindings, { id: b.id })) {
+						store.dispatch('appendBinding', b)
+					}
+				}
+			} catch (e) {
+				window.alert('Something wrong with your clipboard content. It\'s not bindings')
+			}
+		},
 	},
 }
+
+async function getBindingsFromClipboard () {
+	const parsedBindings = JSON.parse(await navigator.clipboard.readText())
+	if (!Array.isArray(parsedBindings)) {
+		window.alert('Something wrong with your clipboard content. It\'s not bindings')
+	}
+	return parsedBindings.map(processBinding)
+}
+
+
+function processBinding (b) {
+	if (bu.validateBinding(b)) {
+		return bu.pickBindingValues(b)
+	}
+	throw new Error('Wrong bindings!')
+}
+
 
 </script>

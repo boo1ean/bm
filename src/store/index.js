@@ -6,6 +6,7 @@ import VuexPersistence from 'vuex-persist'
 import tsStatuses from '../training-session-statuses'
 import tsModes from '../training-session-modes'
 import modes from '../modes'
+import bindingUtils from "../utils/binding-utils";
 
 Vue.use(Vuex)
 
@@ -47,6 +48,9 @@ const store = new Vuex.Store({
 		addBinding (state, binding) {
 			state.bindings = state.bindings.concat([binding])
 		},
+		setBindings (state, bindings) {
+			state.bindings = [...bindings]
+		},
 		removeBinding (state, binding) {
 			state.bindings.splice(_.findIndex(state.bindings, { id: binding.id }), 1)
 		},
@@ -82,11 +86,13 @@ const store = new Vuex.Store({
 			commit('updateBinding', binding)
 		},
 		addBinding ({ commit }) {
-			commit('addBinding', {
-				id: v4(),
-				title: 'Bind title',
-				bind: null,
-			})
+			commit('addBinding', bindingUtils.generateNewBinding())
+		},
+		appendBinding ({ commit }, binding) {
+			commit('addBinding', binding)
+		},
+		setBindings({ commit }, bindings) {
+			commit('setBindings', bindings)
 		},
 		removeBinding ({ commit }, binding) {
 			if (window.confirm('Are you sure?')) {
@@ -125,6 +131,8 @@ const store = new Vuex.Store({
 			}
 		},
 		startSession ({ state, commit }) {
+			commit('updateActiveSession', { ...initialActiveSessionState })
+            
 			const it = modes.random(state.trainingSession, state.bindings)
 			const startTime = new Date().getTime()
 

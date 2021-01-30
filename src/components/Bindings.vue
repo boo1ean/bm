@@ -2,9 +2,13 @@
 v-card
 	v-card-title.align-center.justify-space-between
 		span Bindings
-		v-btn(text @click="expanded = !expanded")
-			span(v-if="expanded") hide
-			span(v-else) show
+		div
+			v-btn(text @click="$emit('copy')") Copy
+			v-btn(text @click="$emit('paste')") Paste
+			v-btn(text @click="$emit('append')") Append
+			v-btn(text @click="expanded = !expanded")
+				span(v-if="expanded") hide
+				span(v-else) show
 	v-card-text
 		v-simple-table(v-show="expanded")
 			template(v-slot:default)
