@@ -1,24 +1,15 @@
-# bm
+# Bind master
 
-## Project setup
-```
-yarn install
-```
+Tool to help master your keybinds. initially created after a struggle with keybinds in WoW PvP arenas.
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
+# Installation
 
-### Compiles and minifies for production
-```
-yarn build
-```
+[Download latest release for Windows or Linux] (https://github.com/boo1ean/bm/releases)
 
-### Lints and fixes files
-```
-yarn lint
-```
+# Usage
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+![](guide.gif)
+
+# License
+
+MIT
