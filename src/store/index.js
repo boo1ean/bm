@@ -102,7 +102,7 @@ const store = new Vuex.Store({
 		updateTrainingSession ({ commit }, payload) {
 			commit('updateTrainingSession', payload)
 		},
-		startSesssionCountdown ({ commit, state }) {
+		startSessionCountdown ({ commit, state }) {
 			if (!state.bindings.length) {
 				return window.alert('No bindings, no training!')
 			}
@@ -131,8 +131,6 @@ const store = new Vuex.Store({
 			}
 		},
 		startSession ({ state, commit }) {
-			commit('updateActiveSession', { ...initialActiveSessionState })
-            
 			const it = modes.random(state.trainingSession, state.bindings)
 			const startTime = new Date().getTime()
 
@@ -146,6 +144,7 @@ const store = new Vuex.Store({
 				success: false,
 			}
 			commit('updateActiveSession', {
+				completedTasks: [],
 				currentTask: task,
 				remainingTime: state.trainingSession.duration,
 				startTime,

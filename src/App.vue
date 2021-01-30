@@ -76,7 +76,7 @@ export default {
 	},
 	methods: {
 		startSession () {
-			store.dispatch('startSesssionCountdown')
+			store.dispatch('startSessionCountdown')
 		},
 		addBinding () {
 			store.dispatch('addBinding')
